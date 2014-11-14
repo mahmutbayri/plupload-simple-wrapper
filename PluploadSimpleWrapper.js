@@ -1,10 +1,9 @@
-/**
+/*!
 * Plupload Simple Wrapper
 * https://github.com/kalimba/plupload-simple-wrapper
 *
 * Released under the MIT license
 */
-
 (function($){
 
 var makeid = function()
@@ -21,7 +20,8 @@ var makeid = function()
 $.PluploadSimpleWrapper = function(element, options)
 {
     var defaults = {
-        browseButtonText: 'Browse File'
+        browseButtonText: 'Browse File',
+        progressInfo: null
     };
 
     var plugin = this;
@@ -61,9 +61,12 @@ $.PluploadSimpleWrapper = function(element, options)
             ]
         },
         init: {
-            PostInit: function()
-            {
-                //that.console.html('Initialize');
+            PostInit: function(up){},
+            BeforeUpload: function(up, file) {
+                if($.isFunction(plugin.settings.progressInfo))
+                {
+                    plugin.settings.progressInfo(up, file);
+                }
             },
             FilesAdded: function(up, files)
             {
@@ -87,6 +90,12 @@ $.PluploadSimpleWrapper = function(element, options)
 
             UploadProgress: function(up, file)
             {
+                if($.isFunction(plugin.settings.progressInfo))
+                {
+                    plugin.settings.progressInfo(up, file);
+                    return;
+                }
+
                 consoleContainer.find("b").html(file.percent + '%');
             },
 
